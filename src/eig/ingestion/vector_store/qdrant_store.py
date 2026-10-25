@@ -51,15 +51,18 @@ class QdrantVectorStore(BaseVectorStore):
         if not chunks:
             return 0
 
+        import uuid
         points = []
         for c in chunks:
+            point_uuid = str(uuid.uuid5(uuid.NAMESPACE_DNS, c.chunk_id))
             points.append(
                 qmodels.PointStruct(
-                    id=c.chunk_id,
+                    id=point_uuid,
                     vector=c.embedding,
                     payload={
                         **c.to_metadata_dict(),
-                        "text": c.text
+                        "text": c.text,
+                        "original_chunk_id": c.chunk_id
                     }
                 )
             )
@@ -108,18 +111,27 @@ class QdrantVectorStore(BaseVectorStore):
         if must_conditions:
             q_filter = qmodels.Filter(must=must_conditions)
 
-        search_result = self.client.search(
-            collection_name=self.collection_name,
-            query_vector=query_vector,
-            limit=top_k,
-            query_filter=q_filter
-        )
+        if hasattr(self.client, "query_points"):
+            response = self.client.query_points(
+                collection_name=self.collection_name,
+                query=query_vector,
+                limit=top_k,
+                query_filter=q_filter
+            )
+            hits = response.points
+        else:
+            hits = self.client.search(
+                collection_name=self.collection_name,
+                query_vector=query_vector,
+                limit=top_k,
+                query_filter=q_filter
+            )
 
         output: List[Tuple[DocumentChunk, float]] = []
-        for hit in search_result:
+        for hit in hits:
             payload = hit.payload or {}
             chunk = DocumentChunk(
-                chunk_id=str(hit.id),
+                chunk_id=str(payload.get("original_chunk_id", hit.id)),
                 document_id=payload.get("document_id", ""),
                 tenant_id=payload.get("tenant_id", ""),
                 text=payload.get("text", ""),

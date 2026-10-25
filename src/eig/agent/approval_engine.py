@@ -47,8 +47,8 @@ class ApprovalEngine:
     ) -> str:
         """Compute HMAC-SHA256 signature binding all critical authorization dimensions."""
         args_hash = hashlib.sha256(arguments_json.encode("utf-8")).hexdigest()
-        exp_iso = expires_at.isoformat()
-        message = f"{tenant_id}:{user_id}:{tool_name}:{args_hash}:{nonce}:{exp_iso}".encode("utf-8")
+        exp_epoch = int(expires_at.timestamp())
+        message = f"{tenant_id}:{user_id}:{tool_name}:{args_hash}:{nonce}:{exp_epoch}".encode("utf-8")
         return hmac.new(self.hmac_secret, message, hashlib.sha256).hexdigest()
 
     async def create_approval_request(
@@ -159,7 +159,7 @@ class ApprovalEngine:
             tool_name=record.tool_name,
             arguments_json=record.arguments_json,
             nonce=record.nonce,
-            expires_at=record.expires_at
+            expires_at=record_exp
         )
 
         if not hmac.compare_digest(expected_token, record.hmac_token):
