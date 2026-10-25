@@ -1,0 +1,45 @@
+name: Enterprise Gateway CI Test Suite
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Python Test Suite & Benchmarks
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12']
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio
+
+      - name: Run Pytest Test Suite
+        run: |
+          python -m pytest tests/ -v
+
+      - name: Validate Static Documentation
+        run: |
+          test -f docs/index.html
+          test -f docs/styles.css
+          test -f docs/app.js
+          echo "Documentation assets verified successfully."

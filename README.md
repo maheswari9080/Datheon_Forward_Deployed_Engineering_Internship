@@ -1,5 +1,6 @@
 # Enterprise Intelligence Gateway (EIG)
 
+[![Live Demo](https://img.shields.io/badge/Live_Showcase-GitHub_Pages-22c55e.svg?style=for-the-badge&logo=githubpages&logoColor=white)](https://maheswari9080.github.io/Datheon_Forward_Deployed_Engineering_Internship/)
 [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
@@ -10,6 +11,8 @@
 ![Enterprise Intelligence Gateway Hero Banner](assets/images/eig_hero_light.png)
 
 > **Enterprise Intelligence Gateway (EIG)** is an execution-ready, secure enterprise AI platform that integrates legacy document ingestion, multi-tenant RBAC retrieval-augmented generation (RAG), autonomous ERP/CRM tool orchestration with human-in-the-loop approvals, and containerized microservice observability.
+>
+> 🌐 **Live Interactive Portal**: [Explore Gateway on GitHub Pages](https://maheswari9080.github.io/Datheon_Forward_Deployed_Engineering_Internship/) (Interactive RAG Persona Simulator, Two-Phase Approval Engine, and Live Telemetry).
 
 ---
 
