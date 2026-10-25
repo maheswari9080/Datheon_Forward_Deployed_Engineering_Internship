@@ -2,7 +2,7 @@
 
 import time
 import uuid
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
