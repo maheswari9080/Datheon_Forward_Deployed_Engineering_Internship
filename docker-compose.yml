@@ -1,0 +1,77 @@
+# ==============================================================================
+# Enterprise Intelligence Gateway (EIG) - Docker Compose Orchestration
+# Reproducible local-first deployment baseline
+# ==============================================================================
+
+services:
+  eig-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eig-gateway-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=Enterprise Intelligence Gateway
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - SECRET_KEY=${SECRET_KEY:-eig-enterprise-secret-key-32-bytes-minimum-security-entropy-sample}
+      - APPROVAL_HMAC_SECRET=${APPROVAL_HMAC_SECRET:-eig-hmac-approval-secret-key-high-entropy-production-guardrail}
+      - APPROVAL_TTL_SECONDS=300
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/eig.db
+      - VECTOR_STORE_PROVIDER=chroma
+      - CHROMA_PERSIST_DIRECTORY=/app/data/chroma_db
+      - CHROMA_COLLECTION_NAME=eig_enterprise_knowledge
+      - EMBEDDING_PROVIDER=mock
+      - RERANKER_PROVIDER=mock
+    volumes:
+      - eig_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - eig_network
+
+  # Optional Vector DB service for multi-node deployments
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: eig-qdrant-store
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - eig_network
+    profiles:
+      - full-stack
+
+  # Optional Prometheus scraper for telemetry
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: eig-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    volumes:
+      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - eig_network
+    profiles:
+      - telemetry
+
+volumes:
+  eig_data:
+    driver: local
+  qdrant_data:
+    driver: local
+
+networks:
+  eig_network:
+    driver: bridge
