@@ -1,0 +1,5 @@
+cost_center,project_code,quarter,budget_allocated_usd,budget_spent_usd,status,lead_manager
+CC-ENG-01,PRJ-AI-GATEWAY,Q1-2026,450000.00,380000.00,ON_TRACK,sarah.connor
+CC-ENG-02,PRJ-VECTOR-ETL,Q1-2026,300000.00,295000.00,ON_TRACK,david.chen
+CC-FIN-01,PRJ-ERP-SYNC,Q1-2026,180000.00,195000.00,OVER_BUDGET,elena.rostova
+CC-SEC-01,PRJ-SOC2-AUDIT,Q1-2026,120000.00,110000.00,COMPLETED,marcus.vance
